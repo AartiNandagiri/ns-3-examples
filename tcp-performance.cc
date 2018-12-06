@@ -140,13 +140,13 @@ MyApp::ScheduleTx (void)
 }
 
 //Trace Sink
-static void
+/*static void
 CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   std::ofstream tmpfile ("cwnd1.plotme", std::ios::in |std::ios::out | std::ios::app);
   tmpfile << Simulator::Now ().GetSeconds () << "\t" << (newCwnd/480.0) << "\n";
   tmpfile.close();
-}
+}*/
 
 //Main function
 int main (int argc, char *argv[])
@@ -222,7 +222,7 @@ int main (int argc, char *argv[])
       ns3TcpSocket1->SetAttribute ("RcvBufSize",  ns3::UintegerValue (bufSize));
 
       //Connect the congestion window trace source to sink
-      ns3TcpSocket1->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
+      //ns3TcpSocket1->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
 
       //Create an object of class MyApp
       Ptr<MyApp> app1 = CreateObject<MyApp> ();
