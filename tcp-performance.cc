@@ -46,16 +46,14 @@ public:
   virtual ~MyApp ();
 
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
-  void ChangeRate (DataRate newrate);
-
+ 
 private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
   void ScheduleTx (void);
   void SendPacket (void);
-  void SendPacket2 (int);
-
+  
   Ptr<Socket>     m_socket;
   Address         m_peer;
   uint32_t        m_packetSize;
@@ -132,19 +130,6 @@ MyApp::SendPacket (void)
 }
 
 void
-MyApp::SendPacket2 (int m_bufSize)
-{
-  uint8_t* buffer = new uint8_t[m_bufSize];
-  Ptr<Packet> packet = Create<Packet> (buffer, m_packetSize);
-  m_socket->Send (packet);
-
-  if (++m_packetsSent < m_nPackets)
-    {
-      ScheduleTx ();
-    }
-}
-
-void
 MyApp::ScheduleTx (void)
 {
   if (m_running)
@@ -154,27 +139,13 @@ MyApp::ScheduleTx (void)
     }
 }
 
-void
-MyApp::ChangeRate (DataRate newrate)
-{
-  m_dataRate = newrate;
-  return;
-}
-
-//Trace Sink for Congestion Window
-/*static void
+//Trace Sink
+static void
 CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   std::ofstream tmpfile ("cwnd1.plotme", std::ios::in |std::ios::out | std::ios::app);
   tmpfile << Simulator::Now ().GetSeconds () << "\t" << (newCwnd/480.0) << "\n";
   tmpfile.close();
-}*/
-
-void
-IncRate (Ptr<MyApp> app, DataRate rate)
-{
-  app->ChangeRate (rate);
-  return;
 }
 
 //Main function
@@ -251,7 +222,7 @@ int main (int argc, char *argv[])
       ns3TcpSocket1->SetAttribute ("RcvBufSize",  ns3::UintegerValue (bufSize));
 
       //Connect the congestion window trace source to sink
-      //ns3TcpSocket1->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
+      ns3TcpSocket1->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
 
       //Create an object of class MyApp
       Ptr<MyApp> app1 = CreateObject<MyApp> ();
